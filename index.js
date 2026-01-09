@@ -4,11 +4,8 @@ const bcrypt = require("bcrypt");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const app = express();
-const port = 3000;
+const port = 4000;
 
-/* =======================
-   Middlewares
-======================= */
 app.use(cors());
 app.use(express.json());
 
@@ -16,9 +13,9 @@ app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
 
-const uri = process.env.DATABASE_URI;
+const uri =
+  "mongodb+srv://nexio-data:Rzqfzt5NiZeHzazd@clustermyfirstmongodbpr.2cecfoe.mongodb.net/?appName=ClusterMyFirstMongoDbProject";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
