@@ -11,9 +11,7 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-/* =======================
-   Routes
-======================= */
+
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
@@ -22,9 +20,7 @@ app.get("/", (req, res) => {
 
 
 
-/* =======================
-   Server Start Time
-======================= */
+//    Server Start Time
 app.listen(port, () => {
   const now = new Date();
   const time = now.toLocaleTimeString();
