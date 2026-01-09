@@ -29,10 +29,13 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     const allDB = client.db("nxieoData");
     const userData = allDB.collection("users");
+    const appdata = allDB.collection("allApp")
 
     app.post("/users", async (req, res) => {
       try {
         const data = req.body;
+        console.log("User Data From Frotedn", data);
+
         const email = { email: data.email };
         const isExgised = await userData.findOne(email);
         if (isExgised) {
@@ -42,8 +45,17 @@ async function run() {
           });
         }
 
-        const password = await bcrypt.hash(data.password, 10);
-        const result = await userData.insertOne({ ...data, password });
+        const hashpassword = await bcrypt.hash(data.password, 10);
+        const saved = {
+          email: data.email,
+          name: data.displayName,
+          photoURL: data.photoURL,
+          role: "user",
+          userCreatAt: data.userCreatAt,
+          password: hashpassword,
+        };
+        const result = await userData.insertOne(saved);
+        console.log("Saved Data", result);
 
         res.send(result);
       } catch (err) {
@@ -51,11 +63,6 @@ async function run() {
         return res.send("Server not Wroking");
       }
     });
-
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
   } finally {
   }
 }
