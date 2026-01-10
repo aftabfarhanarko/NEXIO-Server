@@ -29,7 +29,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     const allDB = client.db("nxieoData");
     const userData = allDB.collection("users");
-    const appdata = allDB.collection("allApp")
+    const appdata = allDB.collection("allApp");
 
     app.post("/users", async (req, res) => {
       try {
@@ -64,18 +64,24 @@ async function run() {
       }
     });
 
-    app.get("/allapp", async (req,res) => {
-      const result = await appdata.find().project().toArray();
-      res.send(result)
-    })
+    app.get("/allapp", async (req, res) => {
+      const { limit, skip } = req.query;
+      const result = await appdata
+        .find()
+        .project()
+        .limit(Number(limit))
+        .skip(Number(skip))
+        .toArray();
+      const count = await appdata.countDocuments();
+      res.send({ result, count });
+    });
 
-    app.get("/singleApp/:id", async (req,res) => {
-      const {id} = req.params;
-      const query = {_id: new ObjectId(id)};
-      const  result = await appdata.findOne(query);
+    app.get("/singleApp/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const result = await appdata.findOne(query);
       res.send(result);
-    })
-    
+    });
   } finally {
   }
 }
