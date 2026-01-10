@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 const port = 4000;
@@ -63,6 +63,19 @@ async function run() {
         return res.send("Server not Wroking");
       }
     });
+
+    app.get("/allapp", async (req,res) => {
+      const result = await appdata.find().project().toArray();
+      res.send(result)
+    })
+
+    app.get("/singleApp/:id", async (req,res) => {
+      const {id} = req.params;
+      const query = {_id: new ObjectId(id)};
+      const  result = await appdata.findOne(query);
+      res.send(result);
+    })
+    
   } finally {
   }
 }
