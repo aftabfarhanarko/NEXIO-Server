@@ -62,7 +62,7 @@ async function run() {
           role: "user",
           providerId: data.providerId || "typed",
           userCreatAt: data.userCreatAt || new Date(),
-          password: hashedPassword, 
+          password: hashedPassword,
         };
 
         console.log("Saved User:", savedUser);
@@ -73,6 +73,29 @@ async function run() {
         console.error(error);
         res.status(500).send("Server not working");
       }
+    });
+
+    // singleUser?email=${user?.email}
+    app.get("/singleUser", async (req, res) => {
+      const { email } = req.query;
+      const query = { email: email };
+      const result = await userData.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
+    app.get("/singleUserRole", async (req, res) => {
+      const { email } = req.query;
+      const query = { email: email };
+      const result = await userData.findOne(query);
+      console.log(result);
+      res.send({ role: result.role });
+    });
+
+    // ALl User
+    app.get("/userAll", async (req, res) => {
+      const result = await userData.find().toArray();
+      res.send(result);
     });
 
     app.get("/allapp", async (req, res) => {
