@@ -98,6 +98,28 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/updeatRole", async (req, res) => {
+      try {
+        const { role, id } = req.body;
+
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+          $set: { role: role },
+        };
+
+        const result = await userData.updateOne(filter, updateDoc);
+        res.send({
+          success: true,
+          modifiedCount: result.modifiedCount,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: "Role update failed",
+        });
+      }
+    });
+
     app.get("/allapp", async (req, res) => {
       const { limit, skip } = req.query;
       const result = await appdata
