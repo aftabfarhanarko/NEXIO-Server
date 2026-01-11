@@ -34,33 +34,44 @@ async function run() {
     app.post("/users", async (req, res) => {
       try {
         const data = req.body;
-        console.log("User Data From Frotedn", data);
+        console.log("User Data From Frontend:", data);
 
-        const email = { email: data.email };
-        const isExgised = await userData.findOne(email);
+        // check user already exists
+        const emailQuery = { email: data.email };
+        const isExgised = await userData.findOne(emailQuery);
+
         if (isExgised) {
           return res.send({
-            message:
-              "This User Data All ready Saved Data Baaase Please Login Now",
+            message: "This user already exists. Please login.",
           });
         }
 
-        const hashpassword = await bcrypt.hash(data.password, 10);
-        const saved = {
-          email: data.email,
-          name: data.displayName,
-          photoURL: data.photoURL,
-          role: "user",
-          userCreatAt: data.userCreatAt,
-          password: hashpassword,
-        };
-        const result = await userData.insertOne(saved);
-        console.log("Saved Data", result);
+        // password handling
+        let hashedPassword = null;
 
+        // 👉 only email/password users will get hashed password
+        if (data.providerId !== "firebase" && data.password) {
+          hashedPassword = await bcrypt.hash(data.password, 10);
+        }
+
+        // final user object
+        const savedUser = {
+          email: data.email,
+          name: data.displayName || "No Name",
+          photoURL: data.photoURL || "",
+          role: "user",
+          providerId: data.providerId || "typed",
+          userCreatAt: data.userCreatAt || new Date(),
+          password: hashedPassword, 
+        };
+
+        console.log("Saved User:", savedUser);
+
+        const result = await userData.insertOne(savedUser);
         res.send(result);
-      } catch (err) {
-        console.log(err);
-        return res.send("Server not Wroking");
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Server not working");
       }
     });
 
